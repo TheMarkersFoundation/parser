@@ -27,9 +27,23 @@ parseMarkers = do
     content <- manyTill parseMainContent eof
     return (MarkersMain title content)
 
-parseFile :: IO ()
-parseFile = do
-    file <- readFile "src/documentacao.mks"
-    case parse parseMarkers "src/documentacao.mks" file of
+parseFileToHtml :: IO ()
+parseFileToHtml = do
+    file <- readFile "src/teste.mks"
+    case parse parseMarkers "src/teste.mks" file of
         Left err -> putStr (errorBundlePretty err)
         Right res -> writeFile "src/saida.html" (toHtml res)
+
+parseFileToJSON :: IO ()
+parseFileToJSON = do
+    file <- readFile "src/teste.mks"
+    case parse parseMarkers "src/teste.mks" file of
+        Left err -> putStr (errorBundlePretty err)
+        Right res -> writeFile "src/saida.json" (toJson res)
+
+parseFileToMarkdown :: IO ()
+parseFileToMarkdown = do
+    file <- readFile "src/teste.mks"
+    case parse parseMarkers "src/teste.mks" file of
+        Left err -> putStr (errorBundlePretty err)
+        Right res -> writeFile "src/saida.md" (toMarkdown res)

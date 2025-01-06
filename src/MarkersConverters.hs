@@ -4,6 +4,7 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 import Data.Text
 import Data.Void
+import Data.List
 import Control.Monad (void)
 
 import AbstractSyntaxTree
@@ -97,6 +98,30 @@ toAbntHtml (MarkersMain someString sections) = "<!DOCTYPE html>\
             <> "</pre>"
         helper (LineBreak) = "<br>"
 -}
+
+
+toMarkdown :: Markers -> String
+toMarkdown (MarkersMain titulo sections) = "# " <> titulo <> "\n\n" <> Prelude.foldr (\x acc -> helper x <> acc) "" sections
+    where
+        helper :: MainSection -> String
+        helper (Paragraph (Default content)) = content
+        helper (Paragraph (Bold content)) = "**" <> content <> "**"
+        helper (Paragraph (Italic content)) = "*" <> content <> "*"
+        helper (Paragraph (Underlined content))     = "**" <> content <> "**" -- Não existe no Markdown. Fallback p/ Italico.
+        helper (Paragraph (Crossed content))        = "~~" <> content <> "~~"
+        helper (Paragraph (CodeInline content))     = "`" <> content <> "`"
+        helper (Ref url author title year access content) = "[" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "](" <> url <> ")"
+        helper (List title content) = "passed."
+        helper (Chap title content) = "### " <> title <> "\n\n" <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+        helper (Link url content) = "[" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "](" <> url <> ")"
+        helper (Image url content) = "![" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "](" <> url <> ")"
+        helper (Code content)
+            = "```"
+            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+            <> "```"
+        helper (LineBreak)
+            = "\n"
+
 
 toHtml :: Markers -> String
 toHtml (MarkersMain someString sections) =
@@ -219,3 +244,61 @@ toHtml (MarkersMain someString sections) =
             <> "</pre>"
         helper (LineBreak)
             = "<br>"
+
+toJson :: Markers -> String
+toJson (MarkersMain someString sections) = "{\n\t\"title\": \"" <> escapeJson someString <> "\",\n\t\"main\": [" <> processSections sections <> "\n\t]\n}"    where
+    processSections :: [MainSection] -> String
+    processSections [] = ""
+    processSections sections =
+        "\n\t\t" <> Data.List.intercalate ",\n\t\t" (Prelude.map helper sections)
+
+    helper :: MainSection -> String
+    helper Empty = "{}"
+    helper (Paragraph (Default content)) =
+        "{\"defaultText\": \"" <> escapeJson content <> "\"}"
+    helper (Paragraph (Bold content)) =
+        "{\"boldText\": \"" <> escapeJson content <> "\"}"
+    helper (Paragraph (Italic content)) =
+        "{\"italicText\": \"" <> escapeJson content <> "\"}"
+    helper (Paragraph (Underlined content)) =
+        "{\"underlinedText\": \"" <> escapeJson content <> "\"}"
+    helper (Paragraph (Crossed content)) =
+        "{\"crossedText\": \"" <> escapeJson content <> "\"}"
+    helper (Paragraph (CodeInline content)) =
+        "{\"inlineCode\": \"" <> escapeJson content <> "\"}"
+    helper (Ref url author title year access content) =
+        "{\"reference\": {\"url\": \"" <> escapeJson url 
+        <> "\", \"author\": \"" <> escapeJson author 
+        <> "\", \"title\": \"" <> escapeJson title 
+        <> "\", \"year\": \"" <> escapeJson year 
+        <> "\", \"access\": \"" <> escapeJson access 
+        <> "\", \"content\": [" <> processSections content <> "]}}"
+    helper (List title content) =
+        "{\"listTitle\": \"" <> escapeJson title <> "\", \"items\": [" <> processSections content <> "]}"
+    helper (Chap title content) =
+        "{\"chapterTitle\": \"" <> escapeJson title <> "\", \"chapterContent\": [" <> processSections content <> "]}"
+    helper (Link url content) =
+        "{\"link\": {\"url\": \"" <> escapeJson url <> "\", \"text\": [" <> processSections content <> "]}}"
+    helper (Image url content) =
+        "{\"image\": {\"url\": \"" <> escapeJson url <> "\", \"alt\": [" <> processSections content <> "]}}"
+    helper (Code content) =
+        "{\"code\": [" <> processSections content <> "]}"
+    helper LineBreak =
+        "{\"lineBreak\": true}"
+
+    escapeJson :: String -> String
+    escapeJson = Prelude.concatMap escapeChar
+        where
+        escapeChar :: Char -> String
+        escapeChar c = case c of
+            '"'  -> "\\\""
+            '\\' -> "\\\\"
+            '\n' -> "\\n"
+            '\r' -> "\\r"
+            '\t' -> "\\t"
+            '\b' -> "\\b"
+            '\f' -> "\\f"
+            x    -> [x]
+
+    removeTrailingComma :: String -> String
+    removeTrailingComma s = if not (Prelude.null s) && Prelude.last s == ',' then Prelude.init s else s
