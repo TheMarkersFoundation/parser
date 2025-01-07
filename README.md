@@ -4,7 +4,7 @@ This is the source code of the **Markers Markup Language** built entirely in Has
 Markers is a new Markup format dedicated for easy of use and simple - but beautiful documentation.
 
 The Markers Parser is a Haskell library that allows you to parse Markers files into Haskell data structures,
-and also to convert said Haskell data structures into various file types, such as HTML, Markdon, and JSON with
+and also to convert said Haskell data structures into various file types, such as HTML, Markdown, and JSON with
 more possibilities to come. The Markers Parser is a work in progress, however, it is already available for use.
 
 ###  Installation & Usage
