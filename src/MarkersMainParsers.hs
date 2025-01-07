@@ -79,3 +79,4 @@ parseCode = do
     content <- parseStrictDefault "(/code)"
     _ <- string "(/code)"
     return (Code content)
+    

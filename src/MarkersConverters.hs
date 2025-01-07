@@ -302,3 +302,4 @@ toJson (MarkersMain someString sections) = "{\n\t\"title\": \"" <> escapeJson so
 
     removeTrailingComma :: String -> String
     removeTrailingComma s = if not (Prelude.null s) && Prelude.last s == ',' then Prelude.init s else s
+

@@ -185,3 +185,4 @@ parseContent = parseLineBreak <|> parseBold <|> parseItalic <|> parseCrossed <|>
 
 parseParagraphTill :: String -> Parser [MainSection]
 parseParagraphTill st = manyTill parseContent (lookAhead (string st))
+
