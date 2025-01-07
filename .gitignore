@@ -1,3 +1,21 @@
+# Ignore build artifacts
+dist/
+dist-newstyle/
+.stack-work/
 
-/dist-newstyle
-/dist-newstyle
+# Ignore temporary files
+*.o
+*.hi
+*.aux
+*.log
+*.toc
+*.out
+*.pdf
+
+# Ignore editor-specific files
+.vscode/
+.idea/
+*.swp
+*~
+src/mks.exe
+src/tree.png
