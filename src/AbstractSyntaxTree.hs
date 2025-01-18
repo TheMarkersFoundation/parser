@@ -114,7 +114,8 @@ data MainSection =
                     | Link String [MainSection] -- [link | URL] texto [/link]
                     | Image String [MainSection] -- [img | URI] texto [/img]
                     | Code [MainSection] -- [code]
-                    | LineBreak 
+                    | LineBreak
+                    | Separator
                     -- | DictPage String [TextTag] -- MELHOR NÃO PENSAR NISSO AGORA.
                     deriving (Show)
 {- 

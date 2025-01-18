@@ -96,6 +96,7 @@ toMarkdown (MarkersMain titulo sections) = "# " <> titulo <> "\n\n" <> Prelude.f
         helper (Paragraph (Default content)) = content
         helper (Paragraph (Bold content)) = "**" <> content <> "**"
         helper (Paragraph (Italic content)) = "*" <> content <> "*"
+        helper (Separator)                          = "---"
         helper (Paragraph (Underlined content))     = "**" <> content <> "**" -- Não existe no Markdown. Fallback p/ Italico.
         helper (Paragraph (Crossed content))        = "~~" <> content <> "~~"
         helper (Paragraph (CodeInline content))     = "`" <> content <> "`"
@@ -218,6 +219,7 @@ toHtml (MarkersMain someString sections) =
         helper (Paragraph (Underlined content))     = "<span style=\"text-decoration:underline\">" <> content <> "</span>"
         helper (Paragraph (Crossed content))        = "<s>" <> content <> "</s>"
         helper (Paragraph (CodeInline content))     = "<code>" <> content <> "</code>"
+        helper (Separator)                          = "<br><hr><br>"
         helper (Ref url author title year access content)
             = "<a href=\"" <> url <> "\">" <> title <> "</a>"
         helper (List title content)

@@ -46,6 +46,7 @@ parseDefault = do
                  string "(/img)"    <|> 
                  string "(code)"    <|>
                  string "(/code)"   <|>
+                 string "(hr)"      <|>
                  string "\n")
                <|> eof
   return (Paragraph (Default content))
@@ -144,6 +145,11 @@ parseLineBreak = do
     _ <- newline
     return LineBreak
 
+parseSeparator :: Parser MainSection
+parseSeparator = do
+    _ <- string "(hr)"
+    return Separator
+
 -- -------------------------------------------------------------------------------------------------
 
 {-
@@ -171,7 +177,7 @@ parseParagraph :: Parser [MainSection]
 parseParagraph = many parseContent
 
 parseContent :: Parser MainSection
-parseContent = parseLineBreak <|> parseBold <|> parseItalic <|> parseCrossed <|> parseUnderlined <|> parseInlineCode <|> parseForceDefault <|> parseDefault
+parseContent =  parseSeparator <|> parseLineBreak <|> parseBold <|> parseItalic <|> parseCrossed <|> parseUnderlined <|> parseInlineCode <|> parseForceDefault <|> parseDefault
 
 -- -------------------------------------------------------------------------------------------------
 
