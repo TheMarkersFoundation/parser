@@ -1,4 +1,4 @@
-# The Markers Parser for Haskell
+# The Markers Parser made in Haskell
 
 This is the source code of the **Markers Markup Language** built entirely in Haskell.
 Markers is a new Markup format dedicated for easy of use and simple - but beautiful documentation.
