@@ -1,7 +1,9 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Redundant return" #-}
-
-module Parser where
+module Parser (
+    parseFileToHtml,
+    parseFileToMarkdown,
+    parseFileToJSON,
+    parseFileToAbnt
+) where
 
 import Text.Megaparsec
 import Text.Megaparsec.Char
@@ -16,7 +18,6 @@ import MarkersConverters
 
 import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), takeBaseName, replaceExtension)
-
 
 parseTitle :: Parser String
 parseTitle = do
@@ -62,3 +63,14 @@ parseFileToMarkdown filePath = do
     case parse parseMarkers filePath file of
         Left err -> putStr (errorBundlePretty err)
         Right res -> writeFile outputFile (toMarkdown res)
+
+parseFileToAbnt :: FilePath -> IO ()
+parseFileToAbnt filePath = do
+    currentDir <- getCurrentDirectory
+    let baseName = takeBaseName filePath
+        outputFile = currentDir </> (baseName ++ ".html")
+
+    file <- readFile filePath
+    case parse parseMarkers filePath file of
+        Left err -> putStr (errorBundlePretty err)
+        Right res -> writeFile outputFile (toAbnt res)

@@ -10,14 +10,13 @@ import AbstractSyntaxTree
 import MarkersParagraphParsers
 
 parseMainContent :: Parser MainSection
-parseMainContent = parseChap <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseCode <|> parseContent
+parseMainContent = parseChap <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseCode <|> parseAbnt <|> parseContent
 
 parseJustParagraph :: String -> Parser [MainSection]
 parseJustParagraph st = manyTill parseContent (lookAhead (string st))
 
 parseStrictDefault :: String -> Parser [MainSection]
 parseStrictDefault st = manyTill parseDefault (lookAhead (string st))
-
 
 parseRef :: Parser MainSection
 parseRef = do
@@ -79,4 +78,54 @@ parseCode = do
     content <- parseStrictDefault "(/code)"
     _ <- string "(/code)"
     return (Code content)
-    
+
+parseAbntContent :: Parser AbntSection
+parseAbntContent = parseAuthor <|> parseInstitution <|> parseSubtitle <|> parseLocation <|> parseYear
+
+parseAbnt :: Parser MainSection
+parseAbnt = do
+    _ <- string "(abnt)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill parseAbntContent (string "(/abnt)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Abnt content)
+
+parseAuthor :: Parser AbntSection
+parseAuthor = do
+    _ <- string "(author)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill anySingle (string "(/author)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Author content)
+
+parseInstitution :: Parser AbntSection
+parseInstitution = do
+    _ <- string "(institution)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill anySingle (string "(/institution)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Institution content)
+
+parseSubtitle :: Parser AbntSection
+parseSubtitle = do
+    _ <- string "(subtitle)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill anySingle (string "(/subtitle)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Subtitle content)
+
+parseLocation :: Parser AbntSection
+parseLocation = do
+    _ <- string "(location)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill anySingle (string "(/location)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Location content)
+
+parseYear :: Parser AbntSection
+parseYear = do
+    _ <- string "(year)"
+    _ <- many (char ' ' <|> char '\n')
+    content <- manyTill anySingle (string "(/year)")
+    _ <- many (char ' ' <|> char '\n')
+    return (Year content)

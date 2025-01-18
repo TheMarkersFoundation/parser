@@ -1,10 +1,10 @@
 module Main where
     
-import Parser (parseFileToHtml, parseFileToMarkdown, parseFileToJSON)
+import Parser
 import System.Environment (getArgs)
 
 printHelp :: IO ()
-printHelp = putStrLn "Usage: mks [-html <file-name> | -markdown <file-name> | -md <file-name> | -json <file-name> | -help | -h]"
+printHelp = putStrLn "Usage: mks [-html <file-name> | -markdown <file-name> | -md <file-name> | -json <file-name> | -abnt <file-name> | -help | -h]"
 
 main :: IO ()
 main = do
@@ -14,6 +14,7 @@ main = do
         ["-markdown", filePath] -> parseFileToMarkdown filePath
         ["-md", filePath] -> parseFileToMarkdown filePath
         ["-json", filePath] -> parseFileToJSON filePath
+        ["-abnt", filePath] -> parseFileToAbnt filePath
         ["-help"] -> printHelp
         ["-h"] -> printHelp
         _ -> printHelp

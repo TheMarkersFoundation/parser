@@ -9,8 +9,8 @@ import Control.Monad (void)
 
 import AbstractSyntaxTree
 
-{- toAbntHtml :: Markers -> String
-toAbntHtml (MarkersMain someString sections) = "<!DOCTYPE html>\
+toAbnt :: Markers -> String
+toAbnt (MarkersMain someString sections) = "<!DOCTYPE html>\
     \<html lang=\"pt-BR\">\
     \<head>\
     \<meta charset=\"UTF-8\">\
@@ -21,83 +21,72 @@ toAbntHtml (MarkersMain someString sections) = "<!DOCTYPE html>\
     \    margin: 3cm 2cm 2cm 3cm;\
     \  }\
     \  body {\
-    \    font-family: Arial, sans-serif;\
+    \    font-family: 'Times New Roman', Times, serif;\
     \    font-size: 12pt;\
-    \    line-height: 1.5;   /* Espaçamento 1,5 */\
+    \    line-height: 1.5;\
     \    text-align: justify;\
     \    color: #000;\
-    \    margin: 0;          /* Remove margens padrões do navegador */\
+    \    margin: 0;\
     \    padding: 0;\
     \  }\
     \  .container {\
     \    background-color: white;\
-    \    /* Você pode remover ou ajustar margens extras aqui, se quiser */\
     \  }\
-    \  p {\
-    \    text-indent: 1.25cm;\
-    \    margin: 0 0 1em;    /* Espaço entre parágrafos */\
-    \  }\
-    \  h1, h2, h3, h4, h5 {\
+    \  .abnt {\
     \    text-align: center;\
-    \    font-weight: bold;\
-    \    margin: 0;\
-    \    padding: 0;\
-    \  }\
-    \  h1 {\
-    \    font-size: 14pt;    /* Título principal um pouco maior */\
-    \    margin-bottom: 1em;\
-    \  }\
-    \  h2, h3 {\
     \    font-size: 12pt;\
+    \    line-height: 2;\
+    \    margin-top: 0%;\
+    \  }\
+    \  .abnt .author,\
+    \  .abnt .institution,\
+    \  .abnt .subtitle,\
+    \  .abnt .location,\
+    \  .abnt .year {\
+    \    margin: 0;\
+    \  }\
+    \  .abnt .title {\
+    \    font-size: 14pt;\
+    \    font-weight: bold;\
     \    margin-bottom: 1em;\
-    \  }\
-    \  details {\
-    \    margin-left: 20px;\
-    \  }\
-    \  summary {\
-    \    cursor: pointer;\
-    \  }\
-    \  img {\
-    \    max-width: 100%;\
-    \  }\
-    \  .referencias {\
-    \    margin-top: 2em;\
-    \  }\
-    \  .referencia {\
-    \    text-indent: 0;     /* Normalmente, referências não têm recuo */\
-    \    margin: 0 0 0.5em 0;\
-    \    line-height: 1;     /* Espaçamento simples */\
     \  }\
     \</style>\
     \</head>\
     \<body>\
-    \<div class=\"container\">\
-    \<h1>" <> someString <> "</h1>"
+    \<div class=\"container\">"
     <> Prelude.foldr (\x acc -> helper x <> acc) "" sections
     <> "</div></body></html>"
     where
         helper :: MainSection -> String
-        helper (Paragraph (Default content))       = content
-        helper (Paragraph (Bold content))          = "<strong>" <> content <> "</strong>"
-        helper (Paragraph (Italic content))        = "<em>" <> content <> "</em>"
-        helper (Paragraph (Underlined content))    = "<span style=\"text-decoration:underline\">" <> content <> "</span>"
-        helper (Paragraph (Crossed content))       = "<s>" <> content <> "</s>"
-        helper (Paragraph (CodeInline content))    = "<code>" <> content <> "</code>"
-        helper (Ref url author title year access content) = "<a href=\"" <> url <> "\">" <> title <> "</a>"
-        helper (List title content) = "<ul>" <> title <> Prelude.foldr (\x acc -> "<li>" <> helper x <> "</li>" <> acc) "" content <> "</ul>" 
-        helper (Chap title content) = "<h3>" <> title <> "</h3>" 
-            <> Prelude.foldr (\x acc -> helper x <> acc) "" content 
-        helper (Link url content) = "<a href=\"" <> url <> "\">" 
-            <> Prelude.foldr (\x acc -> helper x <> acc) "" content 
-            <> "</a>"
-        helper (Image url content) = "<img src=\"" <> url <> "\" alt=\"" 
-            <> Prelude.foldr (\x acc -> helper x <> acc) "" content 
-            <> "\">"
-        helper (Code content) = "<pre>" 
-            <> Prelude.foldr (\x acc -> helper x <> acc) "" content 
-            <> "</pre>"
-        helper (LineBreak) = "<br>"
--}
+        helper (Paragraph (Default content))       = "<p>" <> content <> "</p>"
+        helper (Paragraph (Bold content))          = "<p><strong>" <> content <> "</strong></p>"
+        helper (Paragraph (Italic content))        = "<p><em>" <> content <> "</em></p>"
+        helper (Paragraph (Underlined content))    = "<p><span style=\"text-decoration:underline\">" <> content <> "</span></p>"
+        helper (Chap title content) =
+            "<h2 style=\"font-weight: bold;\">" <> title <> "</h2>\n"
+            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+        helper (Abnt content) = 
+            "<div class=\"abnt\">\n" 
+            <> Prelude.foldr (\x acc -> helperTopAbnt x <> acc) "" content 
+            <> "<h1 class=\"title\">" <> someString <> "</h1>"
+            <> Prelude.foldr (\x acc -> helperBottomAbnt x <> acc) "" content 
+            <> "\n</div>"
+        helper _ = ""
+
+        helperTopAbnt :: AbntSection -> String
+        helperTopAbnt (Institution content) = "<p class=\"institution\" style=\"margin-bottom: 30%\"><b>" <> content <> "</b></p>"
+        helperTopAbnt (Author content) = "<p class=\"author\" style=\"margin-bottom: 30%\">" <> content <> "</p>"
+        helperTopAbnt (Subtitle content) = ""
+        helperTopAbnt (Location content) = ""
+        helperTopAbnt (Year content) = ""
+
+        helperBottomAbnt :: AbntSection -> String
+        helperBottomAbnt (Author content) = ""
+        helperBottomAbnt (Institution content) = ""
+        helperBottomAbnt (Subtitle content) = "<p class=\"subtitle\" style=\"margin-top: -40px; margin-bottom: 60%\">" <> content <> "</p>"
+        helperBottomAbnt (Location content) = "<p class=\"location\">" <> content <> "</p>"
+        helperBottomAbnt (Year content) = "<p class=\"year\">" <> content <> "</p>"
+
 
 
 toMarkdown :: Markers -> String
@@ -202,14 +191,22 @@ toHtml (MarkersMain someString sections) =
     \<h1>" <> someString <> "</h1>"
     <> Prelude.foldr (\x acc -> helper x <> acc) "" sections <>
     "</div>\
-    \<script>\
-    \  document.addEventListener('DOMContentLoaded', () => {\
-    \    const allDetails = document.querySelectorAll('details');\
-    \    allDetails.forEach(det => {\
-    \      det.addEventListener('toggle', () => {\
-    \      });\
-    \    });\
-    \  });\
+    \<script>\n\
+    \  document.addEventListener('DOMContentLoaded', () => {\n\
+    \    const allDetails = document.querySelectorAll('details');\n\
+    \    allDetails.forEach(det => {\n\
+    \      det.addEventListener('toggle', () => {\n\
+    \      });\n\
+    \    });\n\
+    \  });\n\
+    \document.querySelectorAll('.chapter h2').forEach(h2 => {\n\
+        \const level = h2.closest('.chapter').parentElement?.closest('.chapter') ? 2 : 1;\n\
+        \if (level === 2) {\n\
+            \h2.style.fontSize = '1.2em';\n\
+        \} else {\n\
+            \h2.style.fontSize = '1.5em';\n\
+        \}\n\
+    \});\n\
     \</script>\
     \</body>\
     \</html>"
@@ -228,8 +225,9 @@ toHtml (MarkersMain someString sections) =
             <> "<div>" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "</div>"
             <> "</details>"
         helper (Chap title content)
-            = "<h2>" <> title <> "</h2>"
+            = "<div class=\"chapter\"><h2>" <> title <> "</h2>"
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+            <> "</div>"
         helper (Link url content)
             = "<a href=\"" <> url <> "\">"
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content

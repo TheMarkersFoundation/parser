@@ -47,6 +47,12 @@ data TextTag = Default String
             | CodeInline String -- [k]
             deriving (Show)
 
+data AbntSection = Author String
+                 | Institution String
+                 | Subtitle String
+                 | Location String
+                 | Year String
+                 deriving (Show)
 
 {- 
 
@@ -101,6 +107,7 @@ data TextTag = Default String
 data MainSection =  
                     Empty
                     | Paragraph TextTag
+                    | Abnt [AbntSection]
                     | List String [MainSection] -- [>> | titulo]
                     | Chap String [MainSection] -- [chap | titulo]
                     | Ref String String String String String [MainSection] -- [ref | URL | Nome do Autor | Ano | Data de Acesso] QualquerCoisa [/ref]
