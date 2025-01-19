@@ -9,14 +9,30 @@ import Control.Monad (void)
 import AbstractSyntaxTree
 import MarkersParagraphParsers
 
+{-
+-     [ parseMainContent ]
+-     Parser responsável por reconhecer um conteúdo principal.
+-     Um conteúdo principal é um conteúdo que pode ser um parágrafo, uma referência, uma lista, um capítulo, um link, uma imagem, um vídeo, um áudio, um iframe ou um código.
+-}
+
 parseMainContent :: Parser MainSection
-parseMainContent = parseChap <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseCode <|> parseAbnt <|> parseContent
+parseMainContent = parseChap <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseVideo <|> parseAudio <|> parseIframe <|> parseCode <|> parseAbnt <|> parseContent
+
+{-
+-     [ parseJustParagraph ] e [ parseStrictDefault ]
+-     Parsers responsáveis por reconhecer um parágrafo que não possui nenhuma formatação.
+-}
 
 parseJustParagraph :: String -> Parser [MainSection]
 parseJustParagraph st = manyTill parseContent (lookAhead (string st))
 
 parseStrictDefault :: String -> Parser [MainSection]
 parseStrictDefault st = manyTill parseDefault (lookAhead (string st))
+
+{-
+-     [ parseRef ]
+-     Parser responsável por reconhecer uma referência bibliográfica.
+-}
 
 parseRef :: Parser MainSection
 parseRef = do
@@ -29,6 +45,11 @@ parseRef = do
     content <- parseParagraphTill "(/ref)"
     _ <- string "(/ref)"
     return (Ref url author title year access content)
+
+{-
+-     [ parseList ]
+-     Parser responsável por reconhecer uma lista.
+-}
 
 parseList :: Parser MainSection
 parseList = do
@@ -43,6 +64,11 @@ parseList = do
     parseListBody stopMark =
         manyTill parseMainContent (lookAhead (string stopMark))
 
+{-
+-     [ parseChap ]
+-     Parser responsável por reconhecer um capítulo.
+-}
+
 parseChap :: Parser MainSection
 parseChap = do
     _     <- string "(chap |"
@@ -55,6 +81,11 @@ parseChap = do
     parseListBody :: String -> Parser [MainSection]
     parseListBody stopMark =
         manyTill parseMainContent (lookAhead (string stopMark))
+
+{-
+-     [ parseLink ], [ parseImage ], [ parseVideo ], [ parseIframe ], [ parseCode ] e [ parseAudio ]
+-     Parsers responsáveis por reconhecer um link, uma imagem, um vídeo, um iframe, um código e um áudio, respectivamente.
+-}
 
 parseLink :: Parser MainSection
 parseLink = do
@@ -78,6 +109,37 @@ parseCode = do
     content <- parseStrictDefault "(/code)"
     _ <- string "(/code)"
     return (Code content)
+
+parseVideo :: Parser MainSection
+parseVideo = do
+    _ <- string "(video | "
+    url <- manyTill anySingle (string ")")
+    content <- parseStrictDefault "(/video)"
+    _ <- string "(/video)"
+    return (Video url content)
+
+parseIframe :: Parser MainSection
+parseIframe = do
+    _ <- string "(iframe | "
+    url <- manyTill anySingle (string ")")
+    content <- parseStrictDefault "(/iframe)"
+    _ <- string "(/iframe)"
+    return (Iframe url content)
+
+parseAudio :: Parser MainSection
+parseAudio = do
+    _ <- string "(audio | "
+    url <- manyTill anySingle (string ")")
+    content <- parseStrictDefault "(/audio)"
+    _ <- string "(/audio)"
+    return (Audio url content)
+
+
+{-
+-     [ parseAbnt ]
+-     Parser responsável por reconhecer um conteúdo ABNT.
+-     Uso exclusivo para a formatação de trabalhos acadêmicos.
+-}
 
 parseAbntContent :: Parser AbntSection
 parseAbntContent = parseAuthor <|> parseInstitution <|> parseSubtitle <|> parseLocation <|> parseYear

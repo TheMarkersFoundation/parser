@@ -5,10 +5,8 @@ module AbstractSyntaxTree where
     Não temos como fazer tudo isso em um único Datatype, já que
     nem todos os tipos de dados são recursivos, por exemplo:
 
-    [title]Titulo Qualquer[/title]
-    [main]
-        [title]Titulo dentro do corpo???[/title]
-    [/main]
+    (title)Titulo Qualquer(/title)
+        (title)Titulo dentro do corpo???(/title)
 
     Então, nesse caso específico, creio que teremos que
     adicionar Constraints. Eu farei isso declarando
@@ -45,6 +43,8 @@ data TextTag = Default String
             | Bold String       -- [b]
             | Italic String     -- [i]
             | CodeInline String -- [k]
+            | BoldItalic String -- [bi]
+            | Color String String      -- [color | cor]
             deriving (Show)
 
 data AbntSection = Author String
@@ -113,6 +113,9 @@ data MainSection =
                     | Ref String String String String String [MainSection] -- [ref | URL | Nome do Autor | Ano | Data de Acesso] QualquerCoisa [/ref]
                     | Link String [MainSection] -- [link | URL] texto [/link]
                     | Image String [MainSection] -- [img | URI] texto [/img]
+                    | Video String [MainSection] -- [video | URI]
+                    | Audio String [MainSection] -- [audio | URI]
+                    | Iframe String [MainSection] -- [iframe | URI]
                     | Code [MainSection] -- [code]
                     | LineBreak
                     | Separator

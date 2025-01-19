@@ -34,6 +34,10 @@ parseDefault = do
                  string "(b)"       <|>
                  string "(i)"       <|>
                  string "(k)"       <|>
+                 string "(bi)"      <|>
+                 string "(/b)"      <|>
+                 string "(color |"  <|>
+                 string "(/color)"  <|>
                  string "(/ref)"    <|>
                  string "(ref "     <|>
                  string "(>> |"     <|>
@@ -47,6 +51,12 @@ parseDefault = do
                  string "(code)"    <|>
                  string "(/code)"   <|>
                  string "(hr)"      <|>
+                 string "(video |"  <|>
+                 string "(/video)"  <|>
+                string "(audio |"   <|>
+                string "(/audio)"   <|>
+                string "(iframe |"  <|>
+                string "(/iframe)"  <|>
                  string "\n")
                <|> eof
   return (Paragraph (Default content))
@@ -118,6 +128,12 @@ parseItalic = do
     content <- manyTill anySingle (string "(/i)")
     return (Paragraph (Italic content))
 
+parseBoldItalic :: Parser MainSection
+parseBoldItalic = do
+    _ <- string "(bi)"
+    content <- manyTill anySingle (string "(/bi)")
+    return (Paragraph (BoldItalic content))
+
 -- -------------------------------------------------------------------------------------------------
 
 {-
@@ -139,6 +155,13 @@ parseForceDefault = do
     _ <- string "(p)"
     content <- manyTill anySingle (string "(/p)")
     return (Paragraph (Default content))
+
+parseColor :: Parser MainSection
+parseColor = do
+    _ <- string "(color |"
+    color <- manyTill anySingle (string ")")
+    content <- manyTill anySingle (string "(/color)")
+    return (Paragraph (Color color content))
 
 parseLineBreak :: Parser MainSection
 parseLineBreak = do
@@ -177,7 +200,7 @@ parseParagraph :: Parser [MainSection]
 parseParagraph = many parseContent
 
 parseContent :: Parser MainSection
-parseContent =  parseSeparator <|> parseLineBreak <|> parseBold <|> parseItalic <|> parseCrossed <|> parseUnderlined <|> parseInlineCode <|> parseForceDefault <|> parseDefault
+parseContent =  parseSeparator <|> parseColor <|> parseLineBreak <|> parseBoldItalic <|> parseBold <|> parseItalic <|> parseCrossed <|> parseUnderlined <|> parseInlineCode <|> parseForceDefault <|> parseDefault
 
 -- -------------------------------------------------------------------------------------------------
 

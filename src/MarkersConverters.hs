@@ -97,6 +97,7 @@ toMarkdown (MarkersMain titulo sections) = "# " <> titulo <> "\n\n" <> Prelude.f
         helper (Paragraph (Bold content)) = "**" <> content <> "**"
         helper (Paragraph (Italic content)) = "*" <> content <> "*"
         helper (Separator)                          = "---"
+        helper (Paragraph (BoldItalic content))     = "***" <> content <> "***"
         helper (Paragraph (Underlined content))     = "**" <> content <> "**" -- Não existe no Markdown. Fallback p/ Italico.
         helper (Paragraph (Crossed content))        = "~~" <> content <> "~~"
         helper (Paragraph (CodeInline content))     = "`" <> content <> "`"
@@ -218,32 +219,56 @@ toHtml (MarkersMain someString sections) =
         helper (Paragraph (Italic content))         = "<em>" <> content <> "</em>"
         helper (Paragraph (Underlined content))     = "<span style=\"text-decoration:underline\">" <> content <> "</span>"
         helper (Paragraph (Crossed content))        = "<s>" <> content <> "</s>"
+        helper (Paragraph (BoldItalic content))     = "<b><i>" <> content <> "</i></b>"
         helper (Paragraph (CodeInline content))     = "<code>" <> content <> "</code>"
-        helper (Separator)                          = "<br><hr><br>"
+        helper (Paragraph (Color color content))    = "<b><span style=\"color:" <> color <> "\">" <> content <> "</span></b>"
+        helper (Separator)                          = "\n\n<br><hr><br>\n\n"
+
         helper (Ref url author title year access content)
             = "<a href=\"" <> url <> "\">" <> title <> "</a>"
+
         helper (List title content)
-            = "<details><summary>" <> title <> "</summary>"
+            = "\n<details><summary>\n" <> title <> "\n</summary>\n"
             <> "<div>" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "</div>"
-            <> "</details>"
+            <> "</details>\n"
+
         helper (Chap title content)
-            = "<div class=\"chapter\"><h2>" <> title <> "</h2>"
+            = "\n<div class=\"chapter\"><h2>" <> title <> "</h2>\n"
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content
-            <> "</div>"
+            <> "</div>\n"
+
         helper (Link url content)
-            = "<a href=\"" <> url <> "\">"
+            = "\n<a href=\"" <> url <> "\">"
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content
-            <> "</a>"
+            <> "</a>\n"
+
         helper (Image url content)
-            = "<img src=\"" <> url <> "\" alt=\""
+            = "\n<img src=\"" <> url <> "\" alt=\""
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content
-            <> "\">"
+            <> "\">\n"
+
+        helper (Video url content)
+            = "<center><video src=\"" <> url <> "\" style=\"width: 60%\" controls>\n"
+            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+            <> "</video></center>\n"
+
+        helper (Iframe url content)
+            = "<center><iframe src=\"" <> url <> "\">\n"
+            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+            <> "</iframe></center>\n"
+
+        helper (Audio url content)
+            = "<center><audio src=\"" <> url <> "\" controls>\n"
+            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
+            <> "</audio></center>\n"
+
         helper (Code content)
-            = "<pre>"
+            = "<pre>\n"
             <> Prelude.foldr (\x acc -> helper x <> acc) "" content
-            <> "</pre>"
+            <> "</pre>\n"
+
         helper (LineBreak)
-            = "<br>"
+            = "\n<br>\n"
 
 toJson :: Markers -> String
 toJson (MarkersMain someString sections) = "{\n\t\"title\": \"" <> escapeJson someString <> "\",\n\t\"main\": [" <> processSections sections <> "\n\t]\n}"    where
