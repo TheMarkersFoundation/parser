@@ -130,8 +130,8 @@ parseItalic = do
 
 parseBoldItalic :: Parser MainSection
 parseBoldItalic = do
-    _ <- string "(bi)"
-    content <- manyTill anySingle (string "(/bi)")
+    _ <- string "(n)"
+    content <- manyTill anySingle (string "(/n)")
     return (Paragraph (BoldItalic content))
 
 -- -------------------------------------------------------------------------------------------------

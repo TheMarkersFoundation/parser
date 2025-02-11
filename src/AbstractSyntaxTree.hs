@@ -117,6 +117,7 @@ data MainSection =
                     | Audio String [MainSection] -- [audio | URI]
                     | Iframe String [MainSection] -- [iframe | URI]
                     | Code [MainSection] -- [code]
+                    | Summary String
                     | LineBreak
                     | Separator
                     -- | DictPage String [TextTag] -- MELHOR NÃO PENSAR NISSO AGORA.

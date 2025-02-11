@@ -16,7 +16,7 @@ import MarkersParagraphParsers
 -}
 
 parseMainContent :: Parser MainSection
-parseMainContent = parseChap <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseVideo <|> parseAudio <|> parseIframe <|> parseCode <|> parseAbnt <|> parseContent
+parseMainContent = parseChap <|> parseSummary <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseVideo <|> parseAudio <|> parseIframe <|> parseCode <|> parseAbnt <|> parseContent
 
 {-
 -     [ parseJustParagraph ] e [ parseStrictDefault ]
@@ -191,3 +191,9 @@ parseYear = do
     content <- manyTill anySingle (string "(/year)")
     _ <- many (char ' ' <|> char '\n')
     return (Year content)
+
+parseSummary :: Parser MainSection
+parseSummary = do
+    _ <- string "(summary | "
+    title <- manyTill anySingle (string ")")
+    return (Summary title)

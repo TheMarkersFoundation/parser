@@ -10,83 +10,161 @@ import Control.Monad (void)
 import AbstractSyntaxTree
 
 toAbnt :: Markers -> String
-toAbnt (MarkersMain someString sections) = "<!DOCTYPE html>\
-    \<html lang=\"pt-BR\">\
-    \<head>\
-    \<meta charset=\"UTF-8\">\
-    \<title>" <> someString <> "</title>\
-    \<style>\
-    \  @page {\
-    \    size: A4;\
-    \    margin: 3cm 2cm 2cm 3cm;\
-    \  }\
-    \  body {\
-    \    font-family: 'Times New Roman', Times, serif;\
-    \    font-size: 12pt;\
-    \    line-height: 1.5;\
-    \    text-align: justify;\
-    \    color: #000;\
-    \    margin: 0;\
-    \    padding: 0;\
-    \  }\
-    \  .container {\
-    \    background-color: white;\
-    \  }\
-    \  .abnt {\
-    \    text-align: center;\
-    \    font-size: 12pt;\
-    \    line-height: 2;\
-    \    margin-top: 0%;\
-    \  }\
-    \  .abnt .author,\
-    \  .abnt .institution,\
-    \  .abnt .subtitle,\
-    \  .abnt .location,\
-    \  .abnt .year {\
-    \    margin: 0;\
-    \  }\
-    \  .abnt .title {\
-    \    font-size: 14pt;\
-    \    font-weight: bold;\
-    \    margin-bottom: 1em;\
-    \  }\
-    \</style>\
-    \</head>\
-    \<body>\
-    \<div class=\"container\">"
-    <> Prelude.foldr (\x acc -> helper x <> acc) "" sections
-    <> "</div></body></html>"
-    where
-        helper :: MainSection -> String
-        helper (Paragraph (Default content))       = "<p>" <> content <> "</p>"
-        helper (Paragraph (Bold content))          = "<p><strong>" <> content <> "</strong></p>"
-        helper (Paragraph (Italic content))        = "<p><em>" <> content <> "</em></p>"
-        helper (Paragraph (Underlined content))    = "<p><span style=\"text-decoration:underline\">" <> content <> "</span></p>"
-        helper (Chap title content) =
-            "<h2 style=\"font-weight: bold;\">" <> title <> "</h2>\n"
-            <> Prelude.foldr (\x acc -> helper x <> acc) "" content
-        helper (Abnt content) = 
-            "<div class=\"abnt\">\n" 
-            <> Prelude.foldr (\x acc -> helperTopAbnt x <> acc) "" content 
-            <> "<h1 class=\"title\">" <> someString <> "</h1>"
-            <> Prelude.foldr (\x acc -> helperBottomAbnt x <> acc) "" content 
-            <> "\n</div>"
-        helper _ = ""
+toAbnt (MarkersMain someString sections) = "<!DOCTYPE html>\n\
+\<html lang=\"pt-BR\">\n\
+\  <head>\n\
+\    <meta charset=\"UTF-8\">\n\
+\    <title>" <> someString <> "</title>\n\
+\    <style>\n\
+\      @page {\n\
+\        size: A4;\n\
+\        margin: 3cm 2cm 2cm 3cm;\n\
+\      }\n\
+\      body {\n\
+\        font-family: 'Times New Roman', Times, serif;\n\
+\        font-size: 12pt;\n\
+\        line-height: 1.5;\n\
+\        text-align: justify;\n\
+\        color: #000;\n\
+\        margin: 0;\n\
+\        padding: 0;\n\
+\      }\n\
+\    .abnt-code {\n\
+\      font-family: 'Courier New', Courier, monospace;\n\
+\      font-size: 10pt;\n\
+\      padding: 1em;\n\
+\      margin: 1em 0;\n\
+\      line-height: 0.2;\n\
+\      overflow-x: auto;\n\
+\    }\n\
+\      p {\n\
+\        margin: 0 0 1em 0;\n\
+\      }\n\
+\      h1 {\n\
+\        font-size: 12pt;\n\
+\      }\n\
+\      .indent {\n\
+\        text-indent: 1.25cm;\n\
+\      }\n\
+\      h2, h3, h4, h5, h6 {\n\
+\        text-align: left;\n\
+\        margin: 1.5em 0 0.5em 0;\n\
+\        font-size: 14pt;\n\
+\      }\n\
+\      .container {\n\
+\        background-color: white;\n\
+\      }\n\
+\      /* Título do sumário */\n\
+\      .summary-title {\n\
+\        text-align: center;\n\
+\        font-size: 14pt;\n\
+\        font-weight: bold;\n\
+\        margin-bottom: 1em;\n\
+\      }\n\
+\      .summary ul {\n\
+\        list-style: none;\n\
+\        padding: 0;\n\
+\        margin: 0;\n\
+\      }\n\
+\      .summary li {\n\
+\        font-size: 12pt;\n\
+\        padding: 0.2em 0;\n\
+\        display: flex;\n\
+\        align-items: center;\n\
+\        white-space: nowrap;\n\
+\      }\n\
+\      .summary li .chapter-number {\n\
+\        margin-right: 5px;\n\
+\      }\n\
+\      .summary li .dots {\n\
+\        flex: 1;\n\
+\        border-bottom: 1px dotted #000;\n\
+\        margin: 0 5px;\n\
+\      }\n\
+\      .summary li .chapter-title {\n\
+\        margin-left: 5px;\n\
+\      }\n\
+\    </style>\n\
+\    <script>\n\
+\      document.addEventListener('DOMContentLoaded', () => {\n\
+\        const summaryDiv = document.querySelector('.summary');\n\
+\        if (!summaryDiv) {\n\
+\          console.error('Não foi encontrada a div .summary no DOM.');\n\
+\          return;\n\
+\        }\n\
+\        \n\
+\        const ul = document.createElement('ul');\n\
+\        \n\
+\        // Função recursiva para gerar a lista de capítulos\n\
+\        function generateChapterList(chapters, parentNumber = '') {\n\
+\          chapters.forEach((chapter, index) => {\n\
+\            const currentNumber = parentNumber ? `${parentNumber}.${index + 1}` : `${index + 1}`;\n\
+\            \n\
+\            const h2 = chapter.querySelector(':scope > h2');\n\
+\            if (h2) {\n\
+\              const li = document.createElement('li');\n\
+\              const chapterTitle = h2.textContent.trim();\n\
+\              li.innerHTML = `<span class=\"chapter-number\">${currentNumber}</span><span class=\"dots\"></span><span class=\"chapter-title\">${chapterTitle}</span>`;\n\
+\              ul.appendChild(li);\n\
+\            }\n\
+\            \n\
+\            const nestedChapters = chapter.querySelectorAll(':scope > .chapter');\n\
+\            if (nestedChapters.length > 0) {\n\
+\              generateChapterList(Array.from(nestedChapters), currentNumber);\n\
+\            }\n\
+\          });\n\
+\        }\n\
+\        \n\
+\        const topChapters = Array.from(document.querySelectorAll('.chapter')).filter(chapter => {\n\
+\          return !chapter.parentElement.closest('.chapter');\n\
+\        });\n\
+\        \n\
+\        generateChapterList(topChapters);\n\
+\        summaryDiv.appendChild(ul);\n\
+\      });\n\
+\    </script>\n\
+\  </head>\n\
+\  <body>\n\
+\    <div class=\"container\">\n"
+        <> Prelude.foldr (\x acc -> helper x <> acc) "" sections <> "\n\
+\    </div>\n\
+\  </body>\n\
+\</html>"
 
-        helperTopAbnt :: AbntSection -> String
-        helperTopAbnt (Institution content) = "<p class=\"institution\" style=\"margin-bottom: 30%\"><b>" <> content <> "</b></p>"
-        helperTopAbnt (Author content) = "<p class=\"author\" style=\"margin-bottom: 30%\">" <> content <> "</p>"
-        helperTopAbnt (Subtitle content) = ""
-        helperTopAbnt (Location content) = ""
-        helperTopAbnt (Year content) = ""
+  where
+    helper :: MainSection -> String
+    helper (Paragraph (Default content)) = "<p class=\"indent\">" <> content <> "</p>"
+    helper (Paragraph (Bold content)) = "<p><strong>" <> content <> "</strong></p>"
+    helper (Paragraph (Italic content)) = "<p><em>" <> content <> "</em></p>"
+    helper (Paragraph (Underlined content)) = "<p><span style=\"text-decoration:underline\">" <> content <> "</span></p>"
+    helper (Summary content) = "<div class=\"summary\"><h3 class=\"summary-title\">" <> content <> "</h3></div>"
+    helper (Chap title content) = "<div class=\"chapter\"><h2 style=\"font-weight: bold;\">" <> title <> "</h2>\n"
+      <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "</div>"
+    helper (Abnt content) =
+      "<div class=\"abnt\">\n"
+      <> Prelude.foldr (\x acc -> helperTopAbnt x <> acc) "" content
+      <> "<center><h1>" <> someString <> "</h1></center>\n"
+      <> Prelude.foldr (\x acc -> helperBottomAbnt x <> acc) "" content
+      <> "\n</div>"
+    helper Separator = "<br>"
+    helper (Image url content) = "<div style=\"text-align: center;\">" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "<img src=\"" <> url <> "\" style=\"max-width: 100%; height: auto;\"> </div>"
+    helper (Code content) = "<pre class=\"abnt-code\">" <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "</pre>"
+    helper _ = ""
 
-        helperBottomAbnt :: AbntSection -> String
-        helperBottomAbnt (Author content) = ""
-        helperBottomAbnt (Institution content) = ""
-        helperBottomAbnt (Subtitle content) = "<p class=\"subtitle\" style=\"margin-top: -40px; margin-bottom: 60%\">" <> content <> "</p>"
-        helperBottomAbnt (Location content) = "<p class=\"location\">" <> content <> "</p>"
-        helperBottomAbnt (Year content) = "<p class=\"year\">" <> content <> "</p>"
+    helperTopAbnt :: AbntSection -> String
+    helperTopAbnt (Institution content) = "<center><p class=\"institution\" style=\"margin-bottom: 30%\"><b>" <> Prelude.concatMap escapeHtml content <> "</b></p></center>"
+    helperTopAbnt (Author content) = "<center><p class=\"author\" style=\"margin-bottom: 30%\">" <> content <> "</p></center>"
+    helperTopAbnt _ = ""
 
+    escapeHtml :: Char -> String
+    escapeHtml '\n' = "<br>"
+    escapeHtml c = [c]
+
+    helperBottomAbnt :: AbntSection -> String
+    helperBottomAbnt (Subtitle content) = "<center><p class=\"subtitle\" style=\"margin-top: -15px; margin-bottom: 55%\">" <> content <> "</p></center>"
+    helperBottomAbnt (Location content) = "<center><p class=\"location\">" <> content <> "</p></center>"
+    helperBottomAbnt (Year content) = "<center><p class=\"year\" style=\"margin-bottom: 80px\">" <> content <> "</p></center>"
+    helperBottomAbnt _ = ""
 
 
 toMarkdown :: Markers -> String
@@ -127,8 +205,10 @@ toHtml (MarkersMain someString sections) =
     \      margin: 0;\ 
     \      padding: 0;\ 
     \      font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\
-    \      background-color: #fafafa;\
+    \      background-color: white;\
     \      color: #333;\
+    \      text-align: justify;\
+    \      text-justify: inter-word;\
     \    }\
     \    \
     \    .container {\
@@ -136,7 +216,6 @@ toHtml (MarkersMain someString sections) =
     \      margin: 0 auto;\
     \      padding: 2em;\
     \      background-color: #fff;\
-    \      box-shadow: 0 2px 5px rgba(0,0,0,0.1);\
     \    }\
     \    \
     \    .container h1, .container h2, .container h3 {\
@@ -209,6 +288,17 @@ toHtml (MarkersMain someString sections) =
             \h2.style.fontSize = '1.5em';\n\
         \}\n\
     \});\n\
+    \const summaryDiv = document.querySelector('.summary');\n\
+    \const chapters = document.querySelectorAll('.chapter h2');\n\
+    \const ul = document.createElement('ul');\n\
+    \\n\
+    \chapters.forEach(chapter => {\n\
+    \    const li = document.createElement('li');\n\
+    \    li.textContent = chapter.textContent;\n\
+    \    ul.appendChild(li);\n\
+    \});\n\
+    \\n\
+    \summaryDiv.appendChild(ul);\n\
     \</script>\
     \</body>\
     \</html>"
@@ -223,6 +313,7 @@ toHtml (MarkersMain someString sections) =
         helper (Paragraph (CodeInline content))     = "<code>" <> content <> "</code>"
         helper (Paragraph (Color color content))    = "<b><span style=\"color:" <> color <> "\">" <> content <> "</span></b>"
         helper (Separator)                          = "\n\n<br><hr><br>\n\n"
+        helper (Summary content)                    = "<div><h3>" <> content <> "</h3><div class=\"summary\"></div>"
 
         helper (Ref url author title year access content)
             = "<a href=\"" <> url <> "\">" <> title <> "</a>"
