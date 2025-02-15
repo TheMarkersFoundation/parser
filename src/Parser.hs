@@ -19,6 +19,7 @@ import MarkersConverters
 import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), takeBaseName, replaceExtension)
 
+
 parseTitle :: Parser String
 parseTitle = do
     _ <- string "(title)"

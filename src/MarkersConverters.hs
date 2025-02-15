@@ -134,9 +134,9 @@ toAbnt (MarkersMain someString sections) = "<!DOCTYPE html>\n\
   where
     helper :: MainSection -> String
     helper (Paragraph (Default content)) = "<p class=\"indent\">" <> content <> "</p>"
-    helper (Paragraph (Bold content)) = "<p><strong>" <> content <> "</strong></p>"
-    helper (Paragraph (Italic content)) = "<p><em>" <> content <> "</em></p>"
-    helper (Paragraph (Underlined content)) = "<p><span style=\"text-decoration:underline\">" <> content <> "</span></p>"
+    helper (Paragraph (Bold content)) = "<strong>" <> content <> "</strong>"
+    helper (Paragraph (Italic content)) = "<i>" <> content <> "</i>"
+    helper (Paragraph (Underlined content)) = "<span style=\"text-decoration:underline\">" <> content <> "</span>"
     helper (Summary content) = "<div class=\"summary\"><h3 class=\"summary-title\">" <> content <> "</h3></div>"
     helper (Chap title content) = "<div class=\"chapter\"><h2 style=\"font-weight: bold;\">" <> title <> "</h2>\n"
       <> Prelude.foldr (\x acc -> helper x <> acc) "" content <> "</div>"
