@@ -2,7 +2,8 @@ module Parser (
     parseFileToHtml,
     parseFileToMarkdown,
     parseFileToJSON,
-    parseFileToAbnt
+    parseFileToAbnt,
+    parseFileToRaw
 ) where
 
 import Text.Megaparsec
@@ -42,6 +43,17 @@ parseFileToHtml filePath = do
     case parse parseMarkers filePath file of
         Left err -> putStr (errorBundlePretty err)
         Right res -> writeFile outputFile (toHtml res)
+
+parseFileToRaw :: FilePath -> IO ()
+parseFileToRaw filePath = do
+    currentDir <- getCurrentDirectory
+    let baseName = takeBaseName filePath
+        outputFile = currentDir </> (baseName ++ ".html")
+
+    file <- readFile filePath
+    case parse parseMarkers filePath file of
+        Left err -> putStr (errorBundlePretty err)
+        Right res -> writeFile outputFile (toRaw res)
 
 parseFileToJSON :: FilePath -> IO ()
 parseFileToJSON filePath = do

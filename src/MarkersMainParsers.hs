@@ -16,7 +16,7 @@ import MarkersParagraphParsers
 -}
 
 parseMainContent :: Parser MainSection
-parseMainContent = parseChap <|> parseSummary <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseVideo <|> parseAudio <|> parseIframe <|> parseCode <|> parseAbnt <|> parseContent
+parseMainContent =  parseChap <|> parseAbntChap <|> parsePage <|> parseSummary <|> parseRef <|> parseList <|> parseLink <|> parseImage <|> parseVideo <|> parseAudio <|> parseIframe <|> parseCode <|> parseAbnt <|> parseContent
 
 {-
 -     [ parseJustParagraph ] e [ parseStrictDefault ]
@@ -81,6 +81,12 @@ parseChap = do
     parseListBody :: String -> Parser [MainSection]
     parseListBody stopMark =
         manyTill parseMainContent (lookAhead (string stopMark))
+
+parsePage :: Parser MainSection
+parsePage = do
+    _    <- string "(page |"
+    number <- manyTill anySingle (string ")")
+    return (Page number)
 
 {-
 -     [ parseLink ], [ parseImage ], [ parseVideo ], [ parseIframe ], [ parseCode ] e [ parseAudio ]
@@ -197,3 +203,17 @@ parseSummary = do
     _ <- string "(summary | "
     title <- manyTill anySingle (string ")")
     return (Summary title)
+
+parseAbntChap :: Parser MainSection
+parseAbntChap = do
+    _     <- string "(abntchap |"
+    number <- manyTill anySingle (string " | ")
+    title <- manyTill anySingle (string ")")
+    content <- parseListBody "(/abntchap)"
+    _     <- string "(/abntchap)"
+    return (Abntchapter number title content)
+
+    where
+    parseListBody :: String -> Parser [MainSection]
+    parseListBody stopMark =
+        manyTill parseMainContent (lookAhead (string stopMark))

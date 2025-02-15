@@ -10,6 +10,7 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of
+        ["-raw", filePath] -> parseFileToRaw filePath
         ["-html", filePath] -> parseFileToHtml filePath
         ["-markdown", filePath] -> parseFileToMarkdown filePath
         ["-md", filePath] -> parseFileToMarkdown filePath

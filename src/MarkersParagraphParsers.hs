@@ -44,6 +44,8 @@ parseDefault = do
                  string "(/>>)"     <|>
                  string "(chap |"   <|>
                  string "(/chap)"   <|>
+                 string "(abntchap |"   <|>
+                 string "(/abntchap)"   <|>
                  string "(link |"   <|>
                  string "(/link)"   <|>
                  string "(img |"    <|>
@@ -57,6 +59,8 @@ parseDefault = do
                 string "(/audio)"   <|>
                 string "(iframe |"  <|>
                 string "(/iframe)"  <|>
+                string "(page |"    <|>
+                string "(/page)"    <|>
                  string "\n")
                <|> eof
   return (Paragraph (Default content))

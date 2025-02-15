@@ -118,6 +118,8 @@ data MainSection =
                     | Iframe String [MainSection] -- [iframe | URI]
                     | Code [MainSection] -- [code]
                     | Summary String
+                    | Page String -- (page)
+                    | Abntchapter String String [MainSection] -- (abntchapter | number | titulo)
                     | LineBreak
                     | Separator
                     -- | DictPage String [TextTag] -- MELHOR NÃO PENSAR NISSO AGORA.
