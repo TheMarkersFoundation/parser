@@ -1,0 +1,9 @@
+snapshot:
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/14.yaml
+
+packages:
+- .
+
+extra-deps:
+  - github: TheMarkersFoundation/TheMarkersLibrary
+    commit: ffbc816c626cd9bc2267d60e20cdcb6ff70eff3a
