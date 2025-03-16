@@ -5,7 +5,7 @@ import System.Environment (getArgs)
 import System.FilePath (replaceExtension)
 
 printHelp :: IO ()
-printHelp = putStrLn "Usage: mks [-html <file-name> | -markdown <file-name> | -md <file-name> | -json <file-name> | -abnt <file-name> | -help | -h]"
+printHelp = putStrLn "Usage: mks [-html <file-name> | -markdown <file-name> | -md <file-name> | -abnt <file-name> | -help | -h]"
 
 main :: IO ()
 main = do
