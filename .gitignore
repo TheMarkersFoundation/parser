@@ -17,5 +17,7 @@ dist-newstyle/
 .idea/
 *.swp
 *~
+
 src/mks.exe
 src/tree.png
+src/mks

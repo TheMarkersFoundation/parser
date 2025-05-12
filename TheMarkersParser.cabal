@@ -25,8 +25,10 @@ library
   build-depends:
       Markers
     , base
+    , bytestring
     , directory
     , filepath
+    , zip-archive
   default-language: GHC2021
 
 executable TheMarkersParser
@@ -39,6 +41,8 @@ executable TheMarkersParser
   build-depends:
       Markers
     , base
+    , bytestring
     , directory
     , filepath
+    , zip-archive
   default-language: GHC2021

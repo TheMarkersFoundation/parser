@@ -11,6 +11,8 @@ dependencies:
   - base
   - directory
   - filepath
+  - zip-archive
+  - bytestring
   - Markers
 
 library:
@@ -28,5 +30,7 @@ executables:
       - base
       - directory
       - filepath
+      - zip-archive
+      - bytestring
       - Markers
     default-language: GHC2021
