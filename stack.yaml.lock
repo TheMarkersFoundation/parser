@@ -7,25 +7,14 @@ packages:
 - completed:
     name: Markers
     pantry-tree:
-<<<<<<< HEAD
-      sha256: 76a4727fc3d2775d7b27484ad949add2175cf07cf5fe3a189dd3f38ed45a11c3
-      size: 1048
-    sha256: 2476380efb242d39aae88a815122a8cd2b83b1ce4b43fd31af701c6171a2fb22
-    size: 34893
-    url: https://github.com/TheMarkersFoundation/TheMarkersLibrary/archive/c215e3dfa23a6be0ee5d0071e4a05d5abf079ad6.tar.gz
+      sha256: 16b77b4c3278588902e63335db0c4b81109b07ba97de5615a3aabdbffb41885f
+      size: 1782
+    sha256: 56f589e457c741c0ad54cffa8d24dff6988b1026aaec7dadb2e4f2f759cd7061
+    size: 37918
+    url: https://github.com/TheMarkersFoundation/markers/archive/c3be7396804dbac0aae81332ab6553636595cae7.tar.gz
     version: 0.2.0.1
   original:
-    url: https://github.com/TheMarkersFoundation/TheMarkersLibrary/archive/c215e3dfa23a6be0ee5d0071e4a05d5abf079ad6.tar.gz
-=======
-      sha256: fcd89ccae7ade6cf40b30417e0a875263d4822fadf81918cbd6662e4a7f0811d
-      size: 1152
-    sha256: 3d6148b4d3ec666eb55e34b35e4daa86dbc5cb4d47fa333cdca16619196392e2
-    size: 35726
-    url: https://github.com/TheMarkersFoundation/markers/archive/c1af2fd7a119c0dfafc9fad96db3606f623b1208.tar.gz
-    version: 0.2.0.1
-  original:
-    url: https://github.com/TheMarkersFoundation/markers/archive/c1af2fd7a119c0dfafc9fad96db3606f623b1208.tar.gz
->>>>>>> d4d128c0a816a8b123f213e031d4ac37ca8c997f
+    url: https://github.com/TheMarkersFoundation/markers/archive/c3be7396804dbac0aae81332ab6553636595cae7.tar.gz
 snapshots:
 - completed:
     sha256: 1964d439d2a152be4238053f3f997a09fb348391984daab86d724975ef9a423f

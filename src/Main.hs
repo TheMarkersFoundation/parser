@@ -10,16 +10,14 @@ import qualified Data.ByteString.Lazy as L
 import System.IO (withFile, IOMode(..), hSetEncoding, utf8, hGetContents, hPutStr)
 
 printHelp :: IO ()
-printHelp = putStrLn "Usage: mks [-html <file-name> | -markdown <file-name> | -md <file-name> | -abnt <file-name> | -help | -h]"
+printHelp = putStrLn "Usage: mks [-html <file-name> | -legacy <file-name> | -abnt <file-name> | -help | -h]"
 
 main :: IO ()
 main = do
     args <- getArgs
     case args of
-        ["-raw", filePath] -> processFile filePath (replaceExtension filePath ".html") convertToRaw
         ["-html", filePath] -> processFile filePath (replaceExtension filePath ".html") convertToHtml
-        ["-markdown", filePath] -> processFile filePath (replaceExtension filePath ".md") convertToMarkdown
-        ["-md", filePath] -> processFile filePath (replaceExtension filePath ".md") convertToMarkdown
+        ["-legacy", filePath] -> processFile filePath (replaceExtension filePath ".html") convertToStyledHtml
         ["-abnt", filePath] -> processFile filePath (replaceExtension filePath ".html") convertToAbnt
         ["-help"] -> printHelp
         ["-h"] -> printHelp

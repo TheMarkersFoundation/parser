@@ -5,5 +5,5 @@ packages:
 - .
 
 extra-deps:
-  - github: TheMarkersFoundation/TheMarkersLibrary
-    commit: c215e3dfa23a6be0ee5d0071e4a05d5abf079ad6
+  - github: TheMarkersFoundation/markers
+    commit: c3be7396804dbac0aae81332ab6553636595cae7
